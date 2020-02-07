@@ -2,3 +2,4 @@ venv
 analyzedDir
 output.json
 tests/test_out.json
+.idea

@@ -10,8 +10,7 @@ class ExtensionEntry:
         self.extension = extension
 
     def toJSON(self):
-        return json.dumps(self, default=lambda o: o.__dict__,
-                          sort_keys=True, indent=4)
+        return self.__dict__
 
 
 class ExtensionEntriesDictionary:
@@ -28,7 +27,9 @@ class ExtensionEntriesDictionary:
         return current_entry
 
     def write_output_to_file(self, output_file_path):
-        json_output = json.dumps(self.entries, default=lambda object: object.toJSON())
+        json_output = json.dumps(self.entries, default=lambda object: object.toJSON(), indent=4)
         f = open(output_file_path, "w")
         f.write(json_output)
         f.close()
+
+

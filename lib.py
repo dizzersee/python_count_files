@@ -1,12 +1,18 @@
 import json
+import os
+import glob
+
 
 class Serializable:
+    """Class to configure JSON output"""
 
     def toJSON(self):
         return self.__dict__
 
 
 class ExtensionEntry(Serializable):
+    """Class to represent analysis data of an extension"""
+
     CHARACTERS_PER_LINE = 60  # TODO brauchen beleg
 
     def __init__(self, extension):
@@ -19,6 +25,7 @@ class ExtensionEntry(Serializable):
 
 
 class ExtensionEntriesDictionary(Serializable):
+    """Class to represent dictionary of all ExtensionEntries"""
 
     def __init__(self):
         self.extensions_count = 0
@@ -30,11 +37,12 @@ class ExtensionEntriesDictionary(Serializable):
         else:
             current_entry = ExtensionEntry(file_extension)
             self.entries[file_extension] = current_entry
-            self.extensions_count +=1
+            self.extensions_count += 1
         return current_entry
 
 
 class AnalysisData(Serializable):
+    """Class to represent all data of analysis"""
 
     def __init__(self):
         self.entries_dict = ExtensionEntriesDictionary()
@@ -45,3 +53,35 @@ class AnalysisData(Serializable):
         f = open(output_file_path, "w")
         f.write(json_output)
         f.close()
+
+
+class Analyzer:
+    """Class where the actual analysis takes place"""
+
+    def __init__(self, input_dir, output_file):
+        self.input_dir = os.path.abspath(input_dir)
+        self.output_file = os.path.abspath(output_file)
+
+    def analyze_dir(self, detailed_output):
+        if detailed_output: print("\nAnalyzing directory " + self.input_dir + "\n\n")
+
+        analysis_data = AnalysisData()
+        extension_entries_dict = analysis_data.entries_dict
+
+        # Loop through files
+
+        for filename in glob.glob(self.input_dir + "/**/*", recursive=True):
+            print(filename)
+            if not os.path.isfile(filename): continue  # Skip directories
+
+            # Get entry for filename
+
+            file_extension = os.path.splitext(filename)[1]  # TODO brauchen z.B. .blade.php einzeln von .php?
+            if file_extension == "":
+                analysis_data.files_without_extension += 1
+                continue
+
+            current_entry = extension_entries_dict.get_entry(file_extension)
+            current_entry.add_file_data(filename)
+
+        analysis_data.write_output_to_file(self.output_file)

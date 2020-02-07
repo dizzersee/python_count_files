@@ -34,20 +34,20 @@ class ExtensionEntry(Serializable):
 
     def __init__(self, extension):
         self.extension = extension
-        self.characters = 0
-        self.files_count = 0
-        self.lines_count = 0
-        self.normalizedLines = 0
+        self.total_characters = 0
+        self.total_files_count = 0
+        self.total_lines_count = 0
+        self.total_normalized_lines = 0
 
     def add_file_data(self, filename):
-        self.files_count += 1
+        self.total_files_count += 1
         lines_count, chars_count = get_file_data(filename)
-        self.characters += chars_count
-        self.lines_count += lines_count
+        self.total_characters += chars_count
+        self.total_lines_count += lines_count
 
     def analyze(self):
-        self.normalizedLines = self.characters / self.CHARACTERS_PER_LINE
-        self.normalizedLines = math.ceil(self.normalizedLines)
+        self.total_normalized_lines = self.total_characters / self.CHARACTERS_PER_LINE
+        self.total_normalized_lines = math.ceil(self.total_normalized_lines)
 
 
 class ExtensionEntriesDictionary(Serializable):

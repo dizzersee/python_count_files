@@ -30,7 +30,7 @@ class Serializable:
 class ExtensionEntry(Serializable):
     """Class to represent analysis data of an extension"""
 
-    CHARACTERS_PER_LINE = 60  # TODO brauchen beleg
+    CHARACTERS_PER_LINE = 60  # todo
 
     def __init__(self, extension):
         self.extension = extension

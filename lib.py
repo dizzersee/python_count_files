@@ -80,6 +80,7 @@ class AnalysisData(Serializable):
         f = open(output_file_path, "w")
         f.write(json_output)
         f.close()
+        print("Printed to file: " + output_file_path)
 
 
 class Analyzer:

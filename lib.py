@@ -4,6 +4,7 @@ import glob
 import math
 
 
+
 def get_file_data(filename):
     lines_count = 0
     characters_count = 0
@@ -34,10 +35,11 @@ class ExtensionEntry(Serializable):
 
     def __init__(self, extension):
         self.extension = extension
-        self.total_characters = 0
         self.total_files_count = 0
         self.total_lines_count = 0
+        self.total_characters = 0
         self.total_normalized_lines = 0
+        self.avg_characters_per_line = 0
 
     def add_file_data(self, filename):
         self.total_files_count += 1
@@ -46,8 +48,8 @@ class ExtensionEntry(Serializable):
         self.total_lines_count += lines_count
 
     def analyze(self):
-        self.total_normalized_lines = self.total_characters / self.CHARACTERS_PER_LINE
-        self.total_normalized_lines = math.ceil(self.total_normalized_lines)
+        self.total_normalized_lines = math.ceil(self.total_characters / self.CHARACTERS_PER_LINE)
+        self.avg_characters_per_line = math.ceil(self.total_characters / self.total_lines_count)
 
 
 class ExtensionEntriesDictionary(Serializable):
@@ -65,6 +67,7 @@ class ExtensionEntriesDictionary(Serializable):
             self.entries[file_extension] = current_entry
             self.extensions_count += 1
         return current_entry
+
 
 class AnalysisData(Serializable):
     """Class to represent all data of analysis"""
@@ -88,7 +91,7 @@ class Analyzer:
         self.output_file = os.path.abspath(output_file)
 
     def analyze_dir(self, detailed_output):
-        if detailed_output: print("\nAnalyzing directory " + self.input_dir + "\n\n")
+        if detailed_output: print("\nAnalyzing directory " + self.input_dir + "\n\nPrinting analyzed files:\n")
 
         analysis_data = AnalysisData()
         extension_entries_dict = analysis_data.entries_dict
@@ -101,7 +104,8 @@ class Analyzer:
 
             # Get entry for filename
 
-            file_extension = os.path.splitext(filename)[1]  # TODO brauchen z.B. .blade.php einzeln von .php?
+            file_extension = '.'.join(filename.split('.')[1:])
+
             if file_extension == "":
                 analysis_data.files_without_extension += 1
                 continue

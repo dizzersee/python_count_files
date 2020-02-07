@@ -4,12 +4,11 @@ import glob
 import math
 
 
-
 def get_file_data(filename):
     lines_count = 0
     characters_count = 0
 
-    with open(filename) as f:
+    with open(filename, 'rb') as f:
         for i, line in enumerate(f):
             line = line.strip()  # Ignore whitespaces
 

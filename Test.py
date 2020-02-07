@@ -1,5 +1,3 @@
-import glob
-import os
 from lib import Analyzer
 
 

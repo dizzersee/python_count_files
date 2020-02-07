@@ -1,6 +1,23 @@
 import json
 import os
 import glob
+import math
+
+
+def get_file_data(filename):
+    lines_count = 0
+    characters_count = 0
+
+    with open(filename) as f:
+        for i, line in enumerate(f):
+            line = line.strip()  # Ignore whitespaces
+
+            if line == "": continue  # Do not count empty lines
+
+            lines_count += 1
+            characters_count += len(line)
+
+    return lines_count, characters_count
 
 
 class Serializable:
@@ -19,9 +36,18 @@ class ExtensionEntry(Serializable):
         self.extension = extension
         self.characters = 0
         self.files_count = 0
+        self.lines_count = 0
+        self.normalizedLines = 0
 
     def add_file_data(self, filename):
         self.files_count += 1
+        lines_count, chars_count = get_file_data(filename)
+        self.characters += chars_count
+        self.lines_count += lines_count
+
+    def analyze(self):
+        self.normalizedLines = self.characters / self.CHARACTERS_PER_LINE
+        self.normalizedLines = math.ceil(self.normalizedLines)
 
 
 class ExtensionEntriesDictionary(Serializable):
@@ -39,7 +65,6 @@ class ExtensionEntriesDictionary(Serializable):
             self.entries[file_extension] = current_entry
             self.extensions_count += 1
         return current_entry
-
 
 class AnalysisData(Serializable):
     """Class to represent all data of analysis"""
@@ -71,7 +96,7 @@ class Analyzer:
         # Loop through files
 
         for filename in glob.glob(self.input_dir + "/**/*", recursive=True):
-            print(filename)
+            if detailed_output: print(filename)
             if not os.path.isfile(filename): continue  # Skip directories
 
             # Get entry for filename
@@ -84,4 +109,10 @@ class Analyzer:
             current_entry = extension_entries_dict.get_entry(file_extension)
             current_entry.add_file_data(filename)
 
+        self.analyze_entries(extension_entries_dict)
+
         analysis_data.write_output_to_file(self.output_file)
+
+    def analyze_entries(self, extension_entries_dict):
+        for key, entry in extension_entries_dict.entries.items():
+            entry.analyze()

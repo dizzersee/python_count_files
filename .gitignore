@@ -3,3 +3,4 @@ analyzedDir
 output.json
 tests/test_out.json
 .idea
+__pycache__
